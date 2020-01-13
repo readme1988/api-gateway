@@ -1,22 +1,20 @@
 package io.choerodon.gateway.helper;
 
-import io.choerodon.gateway.domain.*;
-import io.choerodon.gateway.filter.authentication.HelperFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
-
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static io.choerodon.core.variable.RequestVariableHolder.HEADER_JWT;
-import static io.choerodon.core.variable.RequestVariableHolder.HEADER_TOKEN;
+import static io.choerodon.core.variable.RequestVariableHolder.*;
+import io.choerodon.gateway.domain.*;
+import io.choerodon.gateway.filter.authentication.HelperFilter;
 
 /**
  * 鉴权逻辑helper
@@ -32,6 +30,8 @@ public class AuthenticationHelper {
     private static final String ACCESS_TOKEN_PREFIX = "bearer";
 
     private static final String ACCESS_TOKEN_PREFIX_UPPER_STARTED = "Bearer";
+
+    private static final String ROUTE_RULE = "route-rule";
 
     private List<HelperFilter> helperFilters;
 
@@ -78,6 +78,8 @@ public class AuthenticationHelper {
 
         if (checkResponse.getJwt() != null && responseContext.getHttpStatus().is2xxSuccessful()) {
             request.setAttribute(HEADER_JWT, checkResponse.getJwt());
+            // RouteRuleCode - 灰度发布使用
+            request.setAttribute(HEADER_ROUTE_RULE, checkResponse.getRouteRuleCode());
         }
         if (checkResponse.getMessage() != null) {
             responseContext.setRequestMessage(checkResponse.getMessage());
